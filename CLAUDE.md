@@ -41,9 +41,17 @@
 
 **数据流：** 游戏画面 → 感知 → 状态 → 决策 → 动作 → 执行 → 循环
 
-## Agent 分工
+## 开发协作
 
-### Agent 1: Device & Capture 专家
+- **Claude**：架构设计、代码审查、验收
+- **Codex**：功能开发、调试、测试
+- **Coworker**：任务拆分、并行执行（如使用）
+
+---
+
+## 模块分工
+
+### Module 1: Device & Capture
 **负责模块：**
 - `src/device/device_controller.py` - 设备连接与ADB控制
 - `src/capture/screen_capture.py` - 截图与录屏
@@ -58,7 +66,7 @@
 
 ---
 
-### Agent 2: Perception 专家
+### Module 2: Perception
 **负责模块：**
 - `src/perception/perception_engine.py` - YOLO + OCR 感知引擎
 
@@ -69,14 +77,14 @@
 - 提供统一的感知接口
 
 **依赖：**
-- 需要 Agent 1 提供的截图数据
+- 需要 Module 1 提供的截图数据
 
 **输入：** `np.ndarray` (图像)  
 **输出：** `List[Detection]` (检测结果)
 
 ---
 
-### Agent 3: World & FSM 专家
+### Module 3: World & FSM
 **负责模块：**
 - `src/world/world_model.py` - 世界状态模型
 - `src/fsm/game_fsm.py` - 有限状态机
@@ -88,14 +96,14 @@
 - 状态转换管理
 
 **依赖：**
-- 需要 Agent 2 提供的感知结果
+- 需要 Module 2 提供的感知结果
 
 **输入：** `perception_result` (感知结果)  
 **输出：** `WorldState`, `GameState` (当前状态)
 
 ---
 
-### Agent 4: Rule & Decision 专家
+### Module 4: Rule & Decision
 **负责模块：**
 - `src/rules/rule_engine.py` - 规则引擎与决策系统
 
@@ -106,14 +114,14 @@
 - 策略切换
 
 **依赖：**
-- 需要 Agent 3 提供的世界状态和FSM状态
+- 需要 Module 3 提供的世界状态和FSM状态
 
 **输入：** `context = {world, fsm, image}`  
 **输出：** `Decision(action, params, reason)`
 
 ---
 
-### Agent 5: Action 专家
+### Module 5: Action
 **负责模块：**
 - `src/action/action_executor.py` - 动作执行与拟人化
 
@@ -124,15 +132,15 @@
 - 复合动作（收获、翻页等）
 
 **依赖：**
-- 需要 Agent 1 的设备控制器
-- 需要 Agent 4 的决策结果
+- 需要 Module 1 的设备控制器
+- 需要 Module 4 的决策结果
 
 **输入：** `Decision` (决策)  
 **输出：** 执行动作
 
 ---
 
-### Agent 6: Integration 专家
+### Module 6: Integration
 **负责模块：**
 - `main.py` - 主控制循环
 - `configs/config.yaml` - 配置管理
@@ -187,39 +195,37 @@ class PerceptionEngine:
 
 ---
 
-## Agent 协作流程
+## 开发流程
 
-### 开发流程
+### Phase 1: 独立开发
+- 每个模块独立开发
+- 使用mock数据进行单元测试
+- 完成后提交PR
 
-1. **Phase 1: 独立开发**
-   - 每个Agent独立开发自己负责的模块
-   - 使用mock数据进行单元测试
-   - 完成后提交PR
+### Phase 2: 接口联调
+- Module 1 + Module 2：设备 → 感知
+- Module 2 + Module 3：感知 → 状态
+- Module 3 + Module 4：状态 → 决策
+- Module 4 + Module 5：决策 → 执行
 
-2. **Phase 2: 接口联调**
-   - Agent 1 + Agent 2：设备 → 感知
-   - Agent 2 + Agent 3：感知 → 状态
-   - Agent 3 + Agent 4：状态 → 决策
-   - Agent 4 + Agent 5：决策 → 执行
-
-3. **Phase 3: 系统集成**
-   - Agent 6 整合所有模块
-   - 端到端测试
-   - 性能优化
+### Phase 3: 系统集成
+- Module 6 整合所有模块
+- 端到端测试
+- 性能优化
 
 ### 沟通协议
 
 **接口变更：**
 - 必须在 `CHANGELOG.md` 中记录
-- 通知下游依赖的Agent
+- 通知下游依赖的模块
 
 **Bug报告：**
-- 使用 `# TODO: <Agent X> - <问题描述>` 标记
+- 使用 `# TODO: <Module X> - <问题描述>` 标记
 - 在对应模块文件中添加注释
 
 **代码审查：**
-- 每个模块的修改需要相邻层Agent review
-- 例如：Agent 2 的代码需要 Agent 1 和 Agent 3 review
+- 每个模块的修改需要相邻层review
+- 例如：Module 2 的代码需要 Module 1 和 Module 3 review
 
 ---
 
@@ -234,10 +240,10 @@ class PerceptionEngine:
 ### 🚧 待完成（按优先级）
 
 **P0 - 核心功能：**
-- [ ] Agent 2: 集成真实的YOLO模型
-- [ ] Agent 2: 集成PaddleOCR
-- [ ] Agent 3: 完善状态识别逻辑
-- [ ] Agent 5: 测试贝塞尔曲线轨迹
+- [ ] Module 2: 集成真实的YOLO模型
+- [ ] Module 2: 集成PaddleOCR
+- [ ] Module 3: 完善状态识别逻辑
+- [ ] Module 5: 测试贝塞尔曲线轨迹
 
 **P1 - 数据准备：**
 - [ ] 录屏采集游戏素材
@@ -289,7 +295,7 @@ python main.py
 
 ## 注意事项
 
-1. **不要修改其他Agent负责的模块** - 除非协商一致
+1. **模块职责明确** - 每个模块只负责自己的功能
 2. **保持接口稳定** - 接口变更必须向后兼容或通知所有相关方
 3. **测试先行** - 提交代码前必须通过单元测试
 4. **文档同步** - 代码变更后更新对应文档
