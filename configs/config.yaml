@@ -1,0 +1,37 @@
+# 配置文件示例
+
+# 设备配置
+device:
+  device_id: null  # null = 自动选择第一个设备
+  screen_width: 1080
+  screen_height: 1920
+
+# 感知配置
+perception:
+  yolo_model_path: "data/models/best.pt"
+  yolo_confidence: 0.5
+  ocr_language: "ch"  # 中文
+
+# 循环配置
+loop:
+  loop_delay: 0.5  # 每次循环间隔（秒）
+  max_loops: null  # null = 无限循环
+  screenshot_save: false  # 是否保存截图
+
+# 拟人化配置
+humanlike:
+  enabled: true
+  click_offset: 5  # 点击随机偏移（像素）
+  min_delay_ms: 100  # 最小操作延迟
+  max_delay_ms: 500  # 最大操作延迟
+
+# 动作配置
+action:
+  swipe_duration: 300  # 滑动持续时间（毫秒）
+  wait_after_harvest: 0.8  # 收获后等待时间（秒）
+
+# 日志配置
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  save_to_file: true
+  log_dir: "logs"

@@ -1,0 +1,17 @@
+# Mobile Automation Framework Dependencies
+
+# Core
+numpy>=1.21.0
+pillow>=9.0.0
+
+# Computer Vision
+opencv-python>=4.5.0
+ultralytics>=8.0.0  # YOLOv8
+paddleocr>=2.6.0
+paddlepaddle>=2.4.0
+
+# Optional: GPU support (uncomment if needed)
+# paddlepaddle-gpu>=2.4.0
+
+# Utilities
+pyyaml>=6.0
