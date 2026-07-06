@@ -4,6 +4,14 @@
 
 ---
 
+## YYYY-MM-DD | START | 角色(Cowork / Claude Code / Codex / Gemini) | 一句话标题
+
+- **任务**: 做什么
+- **边界**: 不碰什么
+- **预计改动**: 列出预计修改的文件
+
+---
+
 ## YYYY-MM-DD | 角色(Cowork / Claude Code / Codex / Gemini) | 一句话标题
 
 - **任务**: 做什么、边界(不碰什么)。
